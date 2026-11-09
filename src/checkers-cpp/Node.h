@@ -12,17 +12,15 @@ class Node
 {
 public:
     int visits      = 0;
-    int wins        = 0;
+    double wins     = 0;    // double: ties add 0.5 and heuristic scores are fractions
     int terminal    = 0;
     int player;
-    const Node * parent;
+    Node * parent;          
     vector<Node *> children;
-    Move move;
+    const Move move;
     vector<Move> untried;
 
-    // Node(const Node & node); // copy constructor
-    Node(int player, vector<Move> untried);
-    Node(int player, vector<Move> untried, const Node * parent);
+    Node(int player, const Move& move, Node * parent);
     ~Node();
 
     bool isTerminal() const;

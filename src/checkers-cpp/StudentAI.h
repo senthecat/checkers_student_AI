@@ -2,6 +2,7 @@
 #define STUDENTAI_H
 #include <chrono>
 #include <numeric>
+#include <random>
 #include "AI.h"
 #include "Board.h"
 #include "Node.h"
@@ -17,6 +18,7 @@ public:
 	virtual Move GetMove(Move board);
 
 private:
+	mt19937 rng;            // seeded once in the constructor
 	double C = 1.5;
 	double timeLimit = 1.0;
 	int maxRollout = 80;
