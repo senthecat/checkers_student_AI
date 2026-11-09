@@ -1,3 +1,5 @@
+# Senthecat -
+This project was originally published on gitlab. It was forked, modified, and migrated to here.
 # CS-171 Checkers Project
 Current Version: 1.1.0.11052019
 # 10/28/2019
