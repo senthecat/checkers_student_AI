@@ -25,13 +25,15 @@ Move StudentAI::GetMove(Move move)
         board.makeMove(move,player == 1?2:1);
     }
 
-    Node * root = new Node(player);
+    vector<vector<Move> > moves = board.getAllPossibleMoves(player);
+    vector<Move> flat_moves = flatten(moves);
+
+    Node * root = new Node(player, flat_moves);
 
     auto start_time = chrono::steady_clock::now();
     auto duration   = chrono::seconds(1);
+ 
 
-
-    vector<vector<Move> > moves = board.getAllPossibleMoves(player);
 
     /*
     int i = rand() % (moves.size());
@@ -42,5 +44,30 @@ Move StudentAI::GetMove(Move move)
     return res;
     */
 
+}
+
+vector<Move> StudentAI::flatten(const vector<vector<Move> > & groups)
+{
+    vector<Move> ret;
+    size_t size = accumulate(groups.begin(), groups.end(), 0ULL,
+        [](size_t sum, const vector<Move>& inner) 
+        {
+            return sum + inner.size();
+        });
+
+    ret.reserve(size);
+    for (const auto& move : groups)
+    {
+       ret.insert(ret.end(), move.begin(), move.end());
+    }
+    return ret;
+}
+
+void StudentAI::undoMoves(int movesMade) {
+    while (movesMade > 0) 
+    {
+        board.Undo();
+        movesMade--;
+    }
 }
 

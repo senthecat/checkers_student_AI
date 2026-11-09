@@ -5,26 +5,39 @@
 
 #include <vector>
 #include <cmath>
-#include <Move.h>
+#include "Move.h"
 
 using namespace std;
-const double explorationP = 1.5;
 class Node
 {
 public:
-    int visits  = 0;
-    int wins    = 0;
+    int visits      = 0;
+    int wins        = 0;
+    int terminal    = 0;
     int player;
-    const Node * parent {nullptr};
+    const Node * parent;
     vector<Node *> children;
     Move move;
     vector<Move> untried;
 
-    Node(int player);
     // Node(const Node & node); // copy constructor
-    Node(const Node & parent, vector<Move> untried);
+    Node(int player, vector<Move> untried);
+    Node(int player, vector<Move> untried, const Node * parent);
     ~Node();
 
-    double uct();
+    bool isTerminal() const;
+    bool isFullyExpanded() const;
+    int toMove() const;
+
+    double uct(double c) const;
+
+    Node* bestUCTChild(double c) const;
+    Node* mostVisitedChild() const;
+
+    Node* addChild(const Move& m, int mover);
+    void update(double scoreForPlayer1);
+
+    Node(const Node&) = delete;
+    Node& operator=(const Node&) = delete;
 };
 #endif
