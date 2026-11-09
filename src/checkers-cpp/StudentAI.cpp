@@ -24,14 +24,23 @@ Move StudentAI::GetMove(Move move)
     } else{
         board.makeMove(move,player == 1?2:1);
     }
+
+    Node * root = new Node(player);
+
+    auto start_time = chrono::steady_clock::now();
+    auto duration   = chrono::seconds(1);
+
+
     vector<vector<Move> > moves = board.getAllPossibleMoves(player);
+
+    /*
     int i = rand() % (moves.size());
     vector<Move> checker_moves = moves[i];
     int j = rand() % (checker_moves.size());
     Move res = checker_moves[j];
     board.makeMove(res,player);
     return res;
-
+    */
 
 }
 

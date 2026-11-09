@@ -1,7 +1,9 @@
 #ifndef STUDENTAI_H
 #define STUDENTAI_H
+#include <chrono>
 #include "AI.h"
 #include "Board.h"
+#include "Node.h"
 #pragma once
 
 //The following part should be completed by students.
