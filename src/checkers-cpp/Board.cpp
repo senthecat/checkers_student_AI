@@ -1,7 +1,9 @@
 #include "Board.h"
 
+// Lookup table from a color to the opposing color.
 const map<string , string> Board::opponent = {{"W","B"},{"B","W"}};
 
+// Empty 0x0 board. Only used so a Board member can exist before it's assigned a real board.
 Board::Board()
 {
     col = 0;
@@ -10,6 +12,8 @@ Board::Board()
     this->blackCount = 0;
     this->whiteCount = 0;
 }
+// Creates a row x col grid of empty squares ("."). Sets the tie limit to 40 moves without a capture.
+// Pieces are placed later by initializeGame().
 Board::Board(int col, int row,int p)
 {
     this->col = col;
@@ -31,6 +35,8 @@ Board::Board(int col, int row,int p)
 }
 
 
+// Prints the board with column numbers across the top and row numbers down the side.
+// b/w = normal piece, B/W = king, . = empty.
 void Board::showBoard()
 {
     cout << setw(2) << " ";
@@ -57,6 +63,8 @@ void Board::showBoard()
 
 }
 
+// Checks the size settings, then places p rows of B pieces at the top and p rows of W pieces at the
+// bottom on alternating squares, counting pieces as it goes.
 void Board::initializeGame(){
     this->checkInitialVariable();
     for (int i = this->p; i >= 0; i--)
@@ -90,6 +98,8 @@ void Board::initializeGame(){
     }
 }
 
+// Checks the board settings and throws InvalidParameterError if they're bad: there must be at least
+// one empty row between the sides (row > 2p), and col * p must be even.
 void Board::checkInitialVariable() {
     // Recently changed: return false is changed to raising exceptions
     // Q > 0
@@ -114,6 +124,9 @@ void Board::checkInitialVariable() {
 
 }
 
+// Checks a single step (one diagonal, or a 2-square jump) for the given color: target on the board
+// and empty, the piece belongs to `turn`, the direction is allowed (B moves down, W moves up, kings
+// both ways), and a jump must pass over an enemy piece.
 bool Board::isValidMove(int chess_row, int chess_col, int target_row, int target_col, string turn)
 {
     if (target_row < 0||target_row >= this->row||target_col < 0||target_col >= this->col)
@@ -150,6 +163,7 @@ bool Board::isValidMove(int chess_row, int chess_col, int target_row, int target
 
 }
 
+// Same as the int version below, but takes a color ("B"/"W") instead of a player number.
 vector<vector<Move> > Board::getAllPossibleMoves(string color) {
     vector<vector<Move> > temp;
     for (int i = 0; i < row; i++) {
@@ -206,6 +220,9 @@ vector<vector<Move> > Board::getAllPossibleMoves(string color) {
     return result;
 }
 
+// All legal moves for a player (1 = B, 2 = W), grouped per piece: result[piece][move].
+// Asks every piece for its moves, then enforces forced capture: if any capture exists, every
+// non-capture move is dropped. Pieces with no moves left aren't included.
 vector<vector<Move> > Board::getAllPossibleMoves(int player) {
     vector<vector<Move> > temp;
     string color = player == 1?"B" : "W";
@@ -263,11 +280,16 @@ vector<vector<Move> > Board::getAllPossibleMoves(int player) {
     return result;
 }
 
+// True if (row, col) is inside the board.
 bool Board::isInBoard(int pos_x, int pos_y)
 {
     return pos_x >= 0 && pos_x < row && pos_y >= 0 && pos_y < col;
 }
 
+// Plays a move for a player (1 = B, 2 = W). Checks and applies it one step at a time: moves the piece,
+// removes any jumped piece (and updates the counts / resets the tie counter), and promotes to king on
+// the far row (a new king's move stops there). Throws InvalidMoveError on a bad step. Saves what
+// changed onto saved_move_list so Undo() can reverse it.
 void Board::makeMove(const Move& move, int player)
 {
     //DO NOT TOUCH ANYTHING IN THIS FUNCTION
@@ -382,6 +404,8 @@ void Board::makeMove(const Move& move, int player)
 }
 
 
+// Checks whether the game is over after `turn` (1 or 2) just moved. Returns -1 for a tie (tie limit
+// reached), 1 or 2 for the winner (the other side has no moves or no pieces), or 0 to keep playing.
 int Board::isWin(int turn) {
     if (this->tieCount >= this->tieMax){
         return -1;
@@ -415,6 +439,7 @@ int Board::isWin(int turn) {
         return 0;
 }
 
+// Same check as the int version, but takes a color ("B"/"W") for the side that just moved.
 int Board::isWin(string turn_s) {
     if (this->tieCount >= this->tieMax){
         return -1;
@@ -464,6 +489,9 @@ int Board::isWin(string turn_s) {
 }
 
 
+// Reverses the last makeMove using saved_move_list: moves the piece back, removes a king promotion
+// that move gave, restores captured pieces, steps the tie counter back, and recounts pieces.
+// Handy for search: makeMove, look deeper, then Undo.
 void Board:: Undo(){
     if(!saved_move_list.empty()){
         Saved_Move temp_saved_move = saved_move_list.back();

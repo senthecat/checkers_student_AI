@@ -5,8 +5,11 @@
 #include "Checker.h"
 #include "Board.h"
 
+// Lookup table from a color to the opposing color.
 const map<string , string> Checker::opponent = {{"W","B"},{"B","W"}};
 
+// One square's contents: color ("B", "W" or "." for empty; lowercase is turned into uppercase),
+// its position, and not a king.
 Checker::Checker(string color, int row, int col) {
     color = (int)color[0] <= 90? color : string("")+(char) ((int)color[0]-32);
     this->color = color;
@@ -16,14 +19,17 @@ Checker::Checker(string color, int row, int col) {
 
 }
 
+// Promotes this piece to a king (can then move both ways).
 void Checker::becomeKing(){
     this->isKing = true;
 };
 
+// Turns this piece back into a normal piece (also used when clearing a square).
 void Checker::becomeMan(){
     this->isKing = false;
 };
 
+// Display character: uppercase B/W for a king, lowercase b/w for a normal piece, "." for empty.
 string Checker::toString() {
     if (isKing){
         return color;
@@ -34,6 +40,10 @@ string Checker::toString() {
     }
 }
 
+// All moves for this piece. Collects single diagonal steps into empty squares, then uses
+// binary_tree_traversal to find every jump chain. If any jump exists, the simple steps are dropped
+// (a piece that can capture must). Blanks its own square during the search so a king can loop back
+// through where it started.
 vector<Move> Checker::getPossibleMoves(Board* board)
 {
     Direction direction;
@@ -82,6 +92,11 @@ vector<Move> Checker::getPossibleMoves(Board* board)
 
 }
 
+// Recursive depth-first search for jump chains from (pos_x, pos_y). If no jump is possible here and
+// we've jumped at least once, the path so far is a complete chain and is added to multiple_jump.
+// Otherwise, for each direction with an enemy next to us and an empty square behind it: remove that
+// enemy, add the landing square, recurse from there, then undo both (backtracking). Only full chains
+// are recorded, so a multi-jump can't stop early.
 void Checker::binary_tree_traversal(int pos_x,int pos_y,vector<vector<Position>> & multiple_jump,Board& board,vector<Position> direction,vector<Position>move, string self_color) {
     bool flag = true;
     for (auto i = direction.begin(); i != direction.end(); i++) {

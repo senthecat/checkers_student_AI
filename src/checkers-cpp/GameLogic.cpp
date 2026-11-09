@@ -1,5 +1,6 @@
 #include "GameLogic.h"
 
+// Stores the board size, piece rows, mode and turn order, and creates the empty list of players.
 GameLogic::GameLogic(int col, int row, int p, string mode,int order)
 {
 	this->col = col;
@@ -10,6 +11,9 @@ GameLogic::GameLogic(int col, int row, int p, string mode,int order)
 	this->aiList = new vector<AI*>();
 }
 
+// Referee loop for manual and self-play modes. Asks the current player's AI for a move, applies it
+// to the referee's own board (an invalid move loses), prints the board, checks isWin, then switches
+// players. Prints the winner or "Tie" at the end.
 void GameLogic::Manual()
 {
 	int player = 1;
@@ -53,6 +57,8 @@ void GameLogic::Manual()
 
 }
 
+// Tournament mode: runs a StudentAI over stdin/stdout. Each loop reads the opponent's move as one
+// token ("-1" = no move yet, so we go first; otherwise "(r,c)-(r,c)..."), and prints StudentAI's reply.
 void GameLogic::TournamentInterface()
 {
 	StudentAI ai(col, row, p);
@@ -65,6 +71,8 @@ void GameLogic::TournamentInterface()
 	}
 }
 
+// Picks the two players based on mode/order (StudentAI + ManualAI, or two StudentAIs), then starts
+// Manual(); in mode "t" it starts TournamentInterface() instead.
 void GameLogic::Run()
 {
 	if (mode == "m" or mode == "manual")
@@ -109,6 +117,7 @@ void GameLogic::Run()
 
 
 
+// Deletes the AI players created in Run().
 GameLogic::~GameLogic()
 {
 	while(!aiList->empty())

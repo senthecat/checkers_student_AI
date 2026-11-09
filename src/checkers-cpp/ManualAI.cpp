@@ -1,6 +1,8 @@
 #include "ManualAI.h"
 #include <iostream>
 
+// Human player. Keeps its own copy of the board, set up for a new game. Defaults to player 2
+// until GetMove sees it's going first.
 ManualAI::ManualAI(int col, int row, int p)
 	:AI(col, row, p)
 {
@@ -9,6 +11,9 @@ ManualAI::ManualAI(int col, int row, int p)
     player = 2;
 }
 
+// Applies the opponent's last move to its own board (an empty move means we go first, as player 1),
+// prints every legal move as "group : [index : move, ...]", reads two ints from cin (group, then
+// index) until they're valid, plays that move on its own board and returns it.
 Move ManualAI::GetMove(Move move)
 {
 

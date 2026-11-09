@@ -2,6 +2,10 @@
 
 #include "GameLogic.h"
 
+// Program entry point. Usage: ./main {col} {row} {p} {mode} [order]
+//   mode: m/manual (you vs StudentAI), s/self (StudentAI vs itself), t (tournament: moves over stdin/stdout)
+//   order (m/s only): 0 = StudentAI is player 1, 1 = the other AI is player 1
+// Builds a GameLogic with those settings and runs it.
 int main(int argc, char *argv[])
 {
 	if (argc < 5)

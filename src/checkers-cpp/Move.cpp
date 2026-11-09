@@ -1,20 +1,25 @@
 #include "Move.h"
 
 
+// Empty move (no positions). Used to mean "no previous move" / "you go first".
 Move::Move()
 {
 }
 
+// Copy constructor: copies the position sequence.
 Move::Move(const Move & move)
 {
     this->seq = move.seq;
 }
 
+// Builds a move from a list of positions: start square, then each landing square.
 Move::Move(const vector<Position> seq)
 {
     this->seq = seq;
 }
 
+// Parses move text like "(5,0)-(4,1)" or "(2,1)-(4,3)-(6,1)" into positions.
+// "-1" gives an empty move. Expects no spaces.
 Move::Move(const string & input)
 {
     int len = input.length();
@@ -43,6 +48,7 @@ Move::Move(const string & input)
 
 }
 
+// Helper: splits a string on a delimiter, e.g. "a-b-c" on "-" gives {"a","b","c"}.
 vector<string> Move::split(string input,const string delimiter){
     vector<string> result;
     size_t pos = 0;
@@ -56,6 +62,7 @@ vector<string> Move::split(string input,const string delimiter){
     return result;
 }
 
+// Formats the move as "(r,c)-(r,c)-...", the same text format the parser above reads.
 string Move::toString()
 {
     string result;
@@ -70,6 +77,7 @@ string Move::toString()
     return result;
 }
 
+// True if the move jumps a piece: more than 2 positions (multi-jump), or a first step of 2 rows.
 bool Move::isCapture()
 {
     if (this->seq.size()>2)
